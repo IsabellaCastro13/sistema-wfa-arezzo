@@ -1,558 +1,215 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sistema de Controle de Estoque • Projeto de Extensão</title>
-  <style>
-    :root{
-      --bg:#0f172a; /* slate-900 */
-      --panel:#111827; /* gray-900 */
-      --muted:#1f2937; /* gray-800 */
-      --card:#0b1223; /* custom */
-      --border:#233044;
-      --text:#e5e7eb; /* gray-200 */
-      --text-dim:#9ca3af; /* gray-400 */
-      --primary:#22d3ee; /* cyan-400 */
-      --accent:#a78bfa; /* violet-300 */
-      --ok:#34d399; /* green-400 */
-      --warn:#fbbf24; /* amber-400 */
-      --bad:#f87171; /* red-400 */
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial; 
-      background: radial-gradient(1200px 800px at 70% -10%, #112 0%, var(--bg) 50%, #0a1020 100%);
-      color:var(--text); line-height:1.4;
-    }
-    header{
-      position:sticky; top:0; z-index:10; backdrop-filter: blur(8px);
-      background: linear-gradient(180deg, rgba(15,23,42,.85), rgba(15,23,42,.6));
-      border-bottom:1px solid var(--border);
-    }
-    .wrap{ max-width:1100px; margin:auto; padding: 16px; }
-    .title{
-      display:flex; align-items:center; gap:12px; flex-wrap:wrap;
-    }
-    .badge{ padding:2px 8px; border-radius:999px; font-size:12px; border:1px solid var(--border); color:var(--text-dim)}
-    .grid{ display:grid; gap:16px; }
-    @media (min-width:900px){ .grid-3{ grid-template-columns: 2fr 1fr; } }
-    @media (min-width:1200px){ .grid-3{ grid-template-columns: 2.2fr 1.2fr; } }
+<meta charset="UTF-8">
+<title>Sistema de Controle WFA</title>
 
-    .card{ background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00)); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
-    .card h3{ margin:0; padding:14px 16px; border-bottom:1px solid var(--border); background: rgba(255,255,255,0.02); }
-    .card .body{ padding:16px; }
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    padding: 20px;
+}
 
-    input, select, button, textarea{
-      background: #0b1223; color:var(--text); border:1px solid var(--border); border-radius:12px; padding:10px 12px; font-size:14px;
-    }
-    input::placeholder, textarea::placeholder{ color: #6b7280; }
-    button{ cursor:pointer; transition: .2s transform ease, .2s opacity ease; }
-    button:hover{ transform: translateY(-1px); }
-    .btn{ padding:10px 14px; border-radius:12px; border:1px solid var(--border); background:linear-gradient(180deg, #0e162a, #0a1222); }
-    .btn.primary{ border-color: transparent; background: linear-gradient(180deg, #22d3ee, #08bde0); color:#05222a; font-weight:700; }
-    .btn.ghost{ background:transparent; }
-    .btn.warn{ background:linear-gradient(180deg, #fbbf24, #f59e0b); color:#1f1300; font-weight:700 }
-    .btn.bad{ background:linear-gradient(180deg, #f87171, #ef4444); color:#2a0606; font-weight:700 }
+h1 {
+    text-align: center;
+}
 
-    .row{ display:flex; gap:10px; flex-wrap:wrap }
-    .row > *{ flex:1 }
+.container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
 
-    table{ width:100%; border-collapse:collapse; font-size:14px; }
-    th, td{ padding:10px; border-bottom:1px solid var(--border); text-align:left; }
-    th{ font-size:12px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.06em; cursor:pointer; user-select:none; }
-    tr.low{ background: linear-gradient(90deg, rgba(248,113,113,0.12), rgba(248,113,113,0)); }
-    tr.zero{ background: linear-gradient(90deg, rgba(251,191,36,0.12), rgba(251,191,36,0)); }
+input, select, button {
+    padding: 8px;
+    margin: 5px;
+}
 
-    .tag{ padding:4px 8px; border-radius:999px; border:1px solid var(--border); color:var(--text-dim); font-size:12px }
+button {
+    background-color: #000;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
 
-    .alert{ display:flex; align-items:center; gap:8px; padding:10px; border:1px solid var(--border); border-radius:12px; background: #0c1528; }
-    .alert.ok{ border-color: rgba(52,211,153,.3) }
-    .alert.warn{ border-color: rgba(251,191,36,.4) }
-    .alert.bad{ border-color: rgba(248,113,113,.4) }
+button:hover {
+    background-color: #444;
+}
 
-    .kpi{ display:grid; grid-template-columns: repeat(4, 1fr); gap:12px }
-    .kpi .item{ padding:14px; border:1px solid var(--border); border-radius:14px; background:#0c1528; }
-    .kpi .item .n{ font-size:22px; font-weight:800 }
-    .kpi .item .l{ color:var(--text-dim); font-size:12px; text-transform:uppercase; letter-spacing:.06em }
-    @media (max-width:800px){ .kpi{ grid-template-columns: repeat(2, 1fr);} }
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
 
-    .pill{ padding:6px 10px; border:1px solid var(--border); border-radius:999px; }
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
 
-    footer{ color:var(--text-dim); font-size:12px; text-align:center; padding:24px; }
+th {
+    background-color: #000;
+    color: white;
+}
 
-    .hidden{ display:none !important }
-  </style>
+.dashboard {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.card {
+    background: #eee;
+    padding: 15px;
+    border-radius: 8px;
+    min-width: 150px;
+    text-align: center;
+}
+</style>
 </head>
+
 <body>
-  <header>
-    <div class="wrap title">
-      <div style="display:flex; align-items:center; gap:10px">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 7h18M3 12h18M3 17h18" stroke="var(--primary)" stroke-width="2" stroke-linecap="round"/></svg>
-        <h1 style="margin:0">Controle de Estoque</h1>
-      </div>
-      <span class="badge" id="version">HTML • LocalStorage</span>
-      <div style="margin-left:auto" class="row" >
-        <input id="search" placeholder="Buscar por nome ou categoria…" style="min-width:260px"/>
-        <button class="btn" id="btn-export-csv" title="Exportar CSV">Exportar CSV</button>
-        <button class="btn" id="btn-backup" title="Exportar Backup JSON">Backup</button>
-        <label class="btn ghost" for="import-json" title="Importar Backup JSON" style="cursor:pointer">Importar<input id="import-json" type="file" accept="application/json" style="display:none"></label>
-      </div>
-    </div>
-  </header>
 
-  <main class="wrap grid grid-3" style="margin-top:16px">
-    <!-- LISTA / MOVIMENTAÇÕES -->
-    <section class="grid" style="gap:16px">
-      <div class="card">
-        <h3>Visão Geral</h3>
-        <div class="body">
-          <div class="kpi">
-            <div class="item"><div class="l">Itens ativos</div><div class="n" id="kpi-itens">0</div></div>
-            <div class="item"><div class="l">Em baixa</div><div class="n" id="kpi-baixa">0</div></div>
-            <div class="item"><div class="l">Estoque total</div><div class="n" id="kpi-estoque">0</div></div>
-            <div class="item"><div class="l">Movimentos (30d)</div><div class="n" id="kpi-movs">0</div></div>
-          </div>
-        </div>
-      </div>
+<h1>Controle de WFA - Arezzo</h1>
 
-      <div class="card">
-        <h3>Itens de Estoque</h3>
-        <div class="body">
-          <div class="row" style="margin-bottom:8px">
-            <div class="pill">Ordenar por: 
-              <select id="sort-by">
-                <option value="name">Nome</option>
-                <option value="category">Categoria</option>
-                <option value="stock">Estoque</option>
-                <option value="min">Mínimo</option>
-                <option value="updatedAt">Atualização</option>
-              </select>
-            </div>
-            <div class="pill">Exibir:
-              <select id="filter">
-                <option value="all">Todos</option>
-                <option value="low">Em baixa</option>
-                <option value="zero">Zerados</option>
-              </select>
-            </div>
-          </div>
-          <div style="overflow:auto">
-            <table id="items-table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th data-k="name">Nome</th>
-                  <th data-k="category">Categoria</th>
-                  <th data-k="unit">Unid.</th>
-                  <th data-k="stock">Estoque</th>
-                  <th data-k="min">Mín.</th>
-                  <th>Últ. Atualização</th>
-                  <th style="text-align:right">Ações</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+<div class="container">
+<h3>Cadastro de WFA</h3>
 
-      <div class="card">
-        <h3>Relatório Básico</h3>
-        <div class="body">
-          <div class="row">
-            <input type="date" id="rep-from"/>
-            <input type="date" id="rep-to"/>
-            <select id="rep-type">
-              <option value="all">Entradas e Saídas</option>
-              <option value="in">Somente Entradas</option>
-              <option value="out">Somente Saídas</option>
-            </select>
-            <button class="btn" id="btn-run-report">Gerar</button>
-            <button class="btn" id="btn-print">Imprimir</button>
-          </div>
-          <div id="report-area" style="margin-top:12px">
-            <div class="alert ok">Selecione um período para ver o relatório.</div>
-          </div>
-        </div>
-      </div>
-    </section>
+<input type="text" id="cliente" placeholder="Nome da Cliente">
+<input type="text" id="produto" placeholder="Produto">
+<input type="text" id="defeito" placeholder="Tipo de Defeito">
 
-    <!-- FORMULÁRIOS -->
-    <aside class="grid" style="gap:16px">
-      <div class="card">
-        <h3>Novo / Editar Item</h3>
-        <div class="body">
-          <form id="item-form" class="grid" style="gap:10px">
-            <input type="hidden" id="item-id">
-            <div class="row">
-              <input id="item-name" required placeholder="Nome do item *"/>
-              <input id="item-cat" placeholder="Categoria (ex.: Bebidas)"/>
-            </div>
-            <div class="row">
-              <input id="item-unit" placeholder="Unidade (ex.: un, cx, kg)"/>
-              <input id="item-min" type="number" min="0" step="1" placeholder="Estoque mínimo"/>
-            </div>
-            <div class="row">
-              <input id="item-initial" type="number" min="0" step="0.01" placeholder="Estoque inicial"/>
-              <input id="item-note" placeholder="Observações (opcional)"/>
-            </div>
-            <div class="row">
-              <button class="btn primary" type="submit">Salvar</button>
-              <button class="btn" type="button" id="btn-clear">Limpar</button>
-              <button class="btn bad" type="button" id="btn-del" disabled>Excluir</button>
-            </div>
-          </form>
-        </div>
-      </div>
+<select id="status">
+<option>Recebido</option>
+<option>Enviado para análise</option>
+<option>Em análise</option>
+<option>Aprovado</option>
+<option>Reprovado</option>
+<option>Entregue ao cliente</option>
+</select>
 
-      <div class="card">
-        <h3>Entrada / Saída</h3>
-        <div class="body">
-          <form id="mov-form" class="grid" style="gap:10px">
-            <div class="row">
-              <select id="mov-item"></select>
-              <select id="mov-type">
-                <option value="in">Entrada</option>
-                <option value="out">Saída</option>
-              </select>
-            </div>
-            <div class="row">
-              <input id="mov-qty" type="number" step="0.01" min="0.01" placeholder="Quantidade *" required />
-              <input id="mov-note" placeholder="Observação (ex.: NF 123, Vendas, Devolução)" />
-            </div>
-            <div class="row">
-              <button class="btn primary" type="submit">Registrar</button>
-              <button class="btn" type="button" id="btn-undo">Desfazer última</button>
-            </div>
-          </form>
-          <div id="low-area" style="margin-top:12px"></div>
-        </div>
-      </div>
+<button onclick="adicionarWFA()">Cadastrar</button>
+</div>
 
-      <div class="card">
-        <h3>Alertas</h3>
-        <div class="body" id="alerts"></div>
-      </div>
-    </aside>
-  </main>
+<div class="container">
+<h3>Lista de WFAs</h3>
+<table>
+<thead>
+<tr>
+<th>Cliente</th>
+<th>Produto</th>
+<th>Defeito</th>
+<th>Status</th>
+<th>Alterar</th>
+</tr>
+</thead>
+<tbody id="tabela"></tbody>
+</table>
+</div>
 
-  <footer>
-    Sistema simples cliente-side (LocalStorage). Sugestão: publique no GitHub Pages ou Vercel. • Atalhos: 
-    <span class="tag">/ para buscar</span> <span class="tag">N para novo item</span> <span class="tag">E para entrada</span> <span class="tag">S para saída</span>
-  </footer>
+<div class="container">
+<h3>Dashboard</h3>
+<div class="dashboard" id="dashboard"></div>
+</div>
 
 <script>
-(function(){
-  const $ = sel => document.querySelector(sel);
-  const $$ = sel => Array.from(document.querySelectorAll(sel));
-  const ls = {
-    get(k, def){ try{ return JSON.parse(localStorage.getItem(k)) ?? def }catch(e){ return def } },
-    set(k, v){ localStorage.setItem(k, JSON.stringify(v)); }
-  }
-  const DB={
-    items: ls.get('inv_items',[]), // {id, name, category, unit, stock, min, note, updatedAt}
-    movs: ls.get('inv_movs',[]),   // {id, itemId, type:'in'|'out', qty, note, at}
-  }
-  const save=()=>{ ls.set('inv_items',DB.items); ls.set('inv_movs',DB.movs) }
 
-  // UTIL
-  const uuid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
-  const fmtDate=ms=> new Date(ms).toLocaleString('pt-BR');
+let wfas = JSON.parse(localStorage.getItem("wfas")) || [];
 
-  // ELEMENTOS
-  const tbody = $('#items-table tbody');
-  const kpiItens = $('#kpi-itens');
-  const kpiBaixa = $('#kpi-baixa');
-  const kpiEstoque = $('#kpi-estoque');
-  const kpiMovs = $('#kpi-movs');
-  const alerts = $('#alerts');
-  const lowArea = $('#low-area');
+function salvar() {
+    localStorage.setItem("wfas", JSON.stringify(wfas));
+}
 
-  const state={ sort:'name', filter:'all', query:'' };
+function adicionarWFA() {
+    const cliente = document.getElementById("cliente").value;
+    const produto = document.getElementById("produto").value;
+    const defeito = document.getElementById("defeito").value;
+    const status = document.getElementById("status").value;
 
-  // RENDER TABELA
-  function renderItems(){
-    let items = [...DB.items];
-    // busca
-    const q = state.query.trim().toLowerCase();
-    if(q){ items = items.filter(i => (i.name+" "+(i.category||'')).toLowerCase().includes(q)); }
-    // filtro
-    if(state.filter==='low'){ items = items.filter(i => i.stock>0 && i.stock <= (i.min||0)); }
-    if(state.filter==='zero'){ items = items.filter(i => (i.stock||0)===0); }
-    // ordenar
-    const k = state.sort;
-    items.sort((a,b)=>{
-      if(k==='updatedAt') return (b.updatedAt||0)-(a.updatedAt||0)
-      if(typeof a[k]==='number') return (b[k]||0)-(a[k]||0)
-      return (""+(a[k]||'')).localeCompare(b[k]||'');
+    if(cliente === "" || produto === "" || defeito === "") {
+        alert("Preencha todos os campos!");
+        return;
+    }
+
+    wfas.push({ cliente, produto, defeito, status });
+    salvar();
+    atualizarTabela();
+    atualizarDashboard();
+
+    document.getElementById("cliente").value = "";
+    document.getElementById("produto").value = "";
+    document.getElementById("defeito").value = "";
+}
+
+function atualizarTabela() {
+    const tabela = document.getElementById("tabela");
+    tabela.innerHTML = "";
+
+    wfas.forEach((wfa, index) => {
+        tabela.innerHTML += `
+        <tr>
+            <td>${wfa.cliente}</td>
+            <td>${wfa.produto}</td>
+            <td>${wfa.defeito}</td>
+            <td>
+                <select onchange="alterarStatus(${index}, this.value)">
+                    <option ${wfa.status === "Recebido" ? "selected" : ""}>Recebido</option>
+                    <option ${wfa.status === "Enviado para análise" ? "selected" : ""}>Enviado para análise</option>
+                    <option ${wfa.status === "Em análise" ? "selected" : ""}>Em análise</option>
+                    <option ${wfa.status === "Aprovado" ? "selected" : ""}>Aprovado</option>
+                    <option ${wfa.status === "Reprovado" ? "selected" : ""}>Reprovado</option>
+                    <option ${wfa.status === "Entregue ao cliente" ? "selected" : ""}>Entregue ao cliente</option>
+                </select>
+            </td>
+            <td><button onclick="remover(${index})">Excluir</button></td>
+        </tr>`;
     });
+}
 
-    tbody.innerHTML = items.map((i,idx)=>{
-      const low = i.stock>0 && i.stock <= (i.min||0);
-      const zero = (i.stock||0)===0;
-      const cls = zero? 'zero' : (low? 'low' : '');
-      return `<tr class="${cls}">
-        <td>${idx+1}</td>
-        <td>${escapeHtml(i.name)}</td>
-        <td><span class="tag">${escapeHtml(i.category||'-')}</span></td>
-        <td>${escapeHtml(i.unit||'-')}</td>
-        <td>${fmtQty(i.stock)}</td>
-        <td>${fmtQty(i.min||0)}</td>
-        <td>${i.updatedAt? fmtDate(i.updatedAt): '-'}</td>
-        <td style="text-align:right">
-          <button class="btn" data-edit="${i.id}">Editar</button>
-          <button class="btn" data-in="${i.id}">+ Entrada</button>
-          <button class="btn" data-out="${i.id}">- Saída</button>
-        </td>
-      </tr>`
-    }).join('');
+function alterarStatus(index, novoStatus) {
+    wfas[index].status = novoStatus;
+    salvar();
+    atualizarDashboard();
+}
 
-    // eventos das ações
-    $$('[data-edit]').forEach(b=> b.onclick = ()=> loadItem(b.dataset.edit));
-    $$('[data-in]').forEach(b=> b.onclick = ()=> openMov(b.dataset.in,'in'));
-    $$('[data-out]').forEach(b=> b.onclick = ()=> openMov(b.dataset.out,'out'));
+function remover(index) {
+    wfas.splice(index, 1);
+    salvar();
+    atualizarTabela();
+    atualizarDashboard();
+}
 
-    // KPIs
-    kpiItens.textContent = DB.items.length;
-    kpiBaixa.textContent = DB.items.filter(i => i.stock>0 && i.stock <= (i.min||0)).length;
-    kpiEstoque.textContent = DB.items.reduce((s,i)=> s + (i.stock||0), 0);
-    const thirty = Date.now()-1000*60*60*24*30;
-    kpiMovs.textContent = DB.movs.filter(m=> m.at>=thirty).length;
+function atualizarDashboard() {
+    const dashboard = document.getElementById("dashboard");
 
-    renderAlerts();
-    renderMovSelect();
-  }
-
-  function renderAlerts(){
-    const low = DB.items.filter(i => i.stock>0 && i.stock <= (i.min||0));
-    const zero = DB.items.filter(i => (i.stock||0)===0);
-    alerts.innerHTML = '';
-    if(low.length===0 && zero.length===0){
-      alerts.innerHTML = `<div class="alert ok">Tudo certo! Nenhum item em baixa agora.</div>`
-      return;
-    }
-    if(low.length){
-      alerts.innerHTML += `<div class="alert warn">${low.length} item(ns) em baixa: ${low.map(i=>escapeHtml(i.name)).join(', ')}.</div>`
-    }
-    if(zero.length){
-      alerts.innerHTML += `<div class="alert bad">${zero.length} item(ns) zerado(s): ${zero.map(i=>escapeHtml(i.name)).join(', ')}.</div>`
-    }
-  }
-
-  // FORM ITEM
-  const f = {
-    id: $('#item-id'), name: $('#item-name'), cat: $('#item-cat'), unit: $('#item-unit'), min: $('#item-min'), initial: $('#item-initial'), note: $('#item-note')
-  }
-
-  function loadItem(id){
-    const it = DB.items.find(x=>x.id===id);
-    if(!it) return;
-    f.id.value = it.id; f.name.value = it.name; f.cat.value = it.category||''; f.unit.value = it.unit||''; f.min.value = it.min||0; f.initial.value = it.stock||0; f.note.value = it.note||''; 
-    $('#btn-del').disabled = false;
-    window.scrollTo({ top: 0, behavior:'smooth' });
-  }
-  function clearItemForm(){ Object.values(f).forEach(el=> el.value=''); $('#btn-del').disabled = true; }
-
-  $('#item-form').addEventListener('submit', (e)=>{
-    e.preventDefault();
-    const name = f.name.value.trim();
-    if(!name){ alert('Informe o nome do item.'); return }
-    const exists = DB.items.find(i=> i.name.toLowerCase()===name.toLowerCase() && i.id!==f.id.value);
-    if(exists && !confirm('Já existe um item com esse nome. Deseja continuar mesmo assim?')) return;
-
-    const payload = {
-      name,
-      category: f.cat.value.trim()||null,
-      unit: f.unit.value.trim()||null,
-      min: Number(f.min.value)||0,
-      note: f.note.value.trim()||null,
-    }
-
-    if(f.id.value){ // editar
-      const it = DB.items.find(x=>x.id===f.id.value);
-      Object.assign(it, payload);
-      it.updatedAt = Date.now();
-      // se estoque inicial alterado, ajustar por movimento de correção
-      const newInit = f.initial.value===''? it.stock : Number(f.initial.value);
-      if(!isNaN(newInit) && newInit !== it.stock){
-        const diff = newInit - it.stock;
-        it.stock = newInit; it.updatedAt = Date.now();
-        DB.movs.push({ id: uuid(), itemId: it.id, type: diff>=0?'in':'out', qty: Math.abs(diff), note: 'Ajuste manual', at: Date.now() });
-      }
-    } else { // novo
-      const stock = Number(f.initial.value)||0;
-      const it = { id: uuid(), stock, updatedAt: Date.now(), ...payload };
-      DB.items.push(it);
-      if(stock>0){ DB.movs.push({ id: uuid(), itemId: it.id, type:'in', qty: stock, note: 'Estoque inicial', at: Date.now() }); }
-    }
-    save();
-    clearItemForm();
-    renderItems();
-  });
-
-  $('#btn-del').onclick = ()=>{
-    if(!f.id.value) return;
-    const it = DB.items.find(x=>x.id===f.id.value);
-    if(!it) return;
-    if(confirm(`Excluir o item "${it.name}"? As movimentações permanecerão para histórico.`)){
-      DB.items = DB.items.filter(x=>x.id!==it.id);
-      save(); clearItemForm(); renderItems();
-    }
-  }
-  $('#btn-clear').onclick = ()=> clearItemForm();
-
-  // MOVIMENTAÇÃO
-  const mf = { item: $('#mov-item'), type: $('#mov-type'), qty: $('#mov-qty'), note: $('#mov-note') }
-  function renderMovSelect(){
-    mf.item.innerHTML = DB.items.map(i=> `<option value="${i.id}">${escapeHtml(i.name)} ${i.unit? '('+escapeHtml(i.unit)+')':''}</option>`).join('');
-  }
-  function openMov(id, type){
-    if(id){ mf.item.value = id; }
-    if(type){ mf.type.value = type; }
-    mf.qty.focus();
-    window.scrollTo({ top: document.body.scrollHeight, behavior:'smooth' });
-  }
-  $('#mov-form').addEventListener('submit', (e)=>{
-    e.preventDefault();
-    const itemId = mf.item.value; const type = mf.type.value; const qty = Number(mf.qty.value);
-    if(!itemId || !qty || qty<=0) { alert('Informe quantidade válida.'); return }
-    const it = DB.items.find(i=> i.id===itemId);
-    if(!it) return;
-    if(type==='out' && it.stock-qty < 0){ if(!confirm('Saída deixará o estoque negativo. Deseja continuar?')) return; }
-    it.stock = Number(((it.stock||0) + (type==='in'? qty : -qty)).toFixed(3));
-    it.updatedAt = Date.now();
-    DB.movs.push({ id: uuid(), itemId, type, qty, note: mf.note.value.trim()||null, at: Date.now() });
-    save();
-    mf.qty.value = ''; mf.note.value='';
-    renderItems();
-    flashLow(it);
-  })
-  $('#btn-undo').onclick = ()=>{
-    const last = DB.movs[DB.movs.length-1];
-    if(!last){ alert('Nenhuma movimentação para desfazer.'); return }
-    const it = DB.items.find(i=> i.id===last.itemId);
-    if(!it){ DB.movs.pop(); save(); renderItems(); return; }
-    // desfaz
-    it.stock = Number(((it.stock||0) + (last.type==='in'? -last.qty : last.qty)).toFixed(3));
-    it.updatedAt = Date.now();
-    DB.movs.pop(); save(); renderItems();
-  }
-
-  function flashLow(it){
-    if(it.stock>0 && it.stock <= (it.min||0)){
-      lowArea.innerHTML = `<div class="alert warn">Atenção: "${escapeHtml(it.name)}" está em baixa (estoque: ${fmtQty(it.stock)} / mínimo: ${fmtQty(it.min||0)}).</div>`
-      setTimeout(()=> lowArea.innerHTML='', 5000);
-    }
-    if((it.stock||0)===0){
-      lowArea.innerHTML = `<div class="alert bad">Alerta: "${escapeHtml(it.name)}" zerou o estoque!</div>`
-      setTimeout(()=> lowArea.innerHTML='', 6000);
-    }
-  }
-
-  // RELATÓRIO
-  $('#btn-run-report').onclick = ()=>{
-    const from = new Date($('#rep-from').value||'1970-01-01');
-    const toRaw = $('#rep-to').value? new Date($('#rep-to').value) : new Date();
-    const to = new Date(toRaw.getFullYear(), toRaw.getMonth(), toRaw.getDate(), 23,59,59,999);
-    const type = $('#rep-type').value;
-
-    let rows = DB.movs.filter(m=> m.at>=from.getTime() && m.at<=to.getTime());
-    if(type!=='all') rows = rows.filter(m=> m.type===type);
-    rows.sort((a,b)=> b.at-a.at);
-
-    const totalIn = rows.filter(r=>r.type==='in').reduce((s,r)=> s+r.qty, 0);
-    const totalOut = rows.filter(r=>r.type==='out').reduce((s,r)=> s+r.qty, 0);
-
-    const html = [`<div class="row" style="margin-bottom:8px">
-      <div class="tag">Período: ${from.toLocaleDateString('pt-BR')} a ${to.toLocaleDateString('pt-BR')}</div>
-      <div class="tag">Movs: ${rows.length}</div>
-      <div class="tag">Entradas: ${fmtQty(totalIn)}</div>
-      <div class="tag">Saídas: ${fmtQty(totalOut)}</div>
-    </div>`];
-
-    html.push('<div style="overflow:auto"><table><thead><tr><th>Data</th><th>Tipo</th><th>Item</th><th>Qtd</th><th>Obs.</th></tr></thead><tbody>');
-    for(const r of rows){
-      const it = DB.items.find(i=> i.id===r.itemId);
-      html.push(`<tr><td>${fmtDate(r.at)}</td><td>${r.type==='in'? 'Entrada':'Saída'}</td><td>${escapeHtml(it? it.name : '(excluído)')}</td><td>${fmtQty(r.qty)} ${it?.unit||''}</td><td>${escapeHtml(r.note||'-')}</td></tr>`)
-    }
-    html.push('</tbody></table></div>');
-
-    $('#report-area').innerHTML = html.join('');
-  }
-  $('#btn-print').onclick = ()=> window.print();
-
-  // BUSCA / ORDEM / FILTRO
-  $('#search').addEventListener('input', (e)=>{ state.query = e.target.value; renderItems(); });
-  $('#sort-by').onchange = e=>{ state.sort = e.target.value; renderItems(); }
-  $('#filter').onchange = e=>{ state.filter = e.target.value; renderItems(); }
-
-  // EXPORTS
-  $('#btn-export-csv').onclick = ()=>{
-    const rows = [['Nome','Categoria','Unid.','Estoque','Mínimo','Atualização']].concat(
-      DB.items.map(i=> [i.name, i.category||'', i.unit||'', i.stock||0, i.min||0, i.updatedAt? new Date(i.updatedAt).toISOString() : ''])
-    );
-    downloadCsv('itens_estoque.csv', rows);
-  }
-  $('#btn-backup').onclick = ()=>{
-    const data = { items: DB.items, movs: DB.movs, exportedAt: new Date().toISOString() };
-    downloadFile('backup_estoque.json', JSON.stringify(data, null, 2), 'application/json');
-  }
-  $('#import-json').addEventListener('change', (e)=>{
-    const file = e.target.files[0]; if(!file) return;
-    const reader = new FileReader();
-    reader.onload = ()=>{
-      try{
-        const data = JSON.parse(reader.result);
-        if(!data.items || !Array.isArray(data.items)) throw new Error('Arquivo inválido');
-        DB.items = data.items; DB.movs = data.movs||[]; save(); renderItems(); alert('Importado com sucesso.');
-      }catch(err){ alert('Falha ao importar: '+err.message) }
-    }
-    reader.readAsText(file);
-  })
-
-  // TECLAS RÁPIDAS
-  document.addEventListener('keydown', (e)=>{
-    if(e.target.matches('input, textarea, select')){
-      if(e.key==='/'){ /* permite buscar mesmo focado */ $('#search').focus(); e.preventDefault(); }
-      return;
-    }
-    if(e.key==='/'){ $('#search').focus(); e.preventDefault(); }
-    if(e.key.toLowerCase()==='n'){ f.name.focus(); }
-    if(e.key.toLowerCase()==='e'){ openMov(null,'in'); }
-    if(e.key.toLowerCase()==='s'){ openMov(null,'out'); }
-  });
-
-  // HELPERS
-  function fmtQty(n){ return (Number(n||0)).toLocaleString('pt-BR', { maximumFractionDigits: 3 }) }
-  function escapeHtml(str){ return (str+"").replace(/[&<>"]+/g, s=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s])) }
-  function downloadCsv(name, rows){
-    const csv = rows.map(r=> r.map(v=> '"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\n');
-    downloadFile(name, csv, 'text/csv;charset=utf-8;');
-  }
-  function downloadFile(name, content, mime){
-    const blob = new Blob([content], {type: mime});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click(); URL.revokeObjectURL(a.href);
-  }
-
-  // INICIALIZAÇÃO (dados de exemplo se vazio)
-  if(DB.items.length===0){
-    const demo = [
-      { name:'Água Mineral 500ml', category:'Bebidas', unit:'un', stock:24, min:10 },
-      { name:'Refrigerante Lata', category:'Bebidas', unit:'un', stock:12, min:12 },
-      { name:'Batata Palito 2kg', category:'Insumos', unit:'kg', stock:6, min:4 },
-      { name:'Copo Descartável 300ml', category:'Descartáveis', unit:'cx', stock:0, min:2 },
+    const statusList = [
+        "Recebido",
+        "Enviado para análise",
+        "Em análise",
+        "Aprovado",
+        "Reprovado",
+        "Entregue ao cliente"
     ];
-    for(const d of demo){ DB.items.push({ id: uuid(), updatedAt: Date.now(), note:null, ...d }); }
-    DB.movs.push({ id: uuid(), itemId: DB.items[0].id, type:'in', qty:24, note:'Estoque inicial', at: Date.now() });
-    DB.movs.push({ id: uuid(), itemId: DB.items[1].id, type:'in', qty:12, note:'Estoque inicial', at: Date.now() });
-    DB.movs.push({ id: uuid(), itemId: DB.items[2].id, type:'in', qty:6, note:'Estoque inicial', at: Date.now() });
-    DB.movs.push({ id: uuid(), itemId: DB.items[3].id, type:'in', qty:0, note:'Estoque inicial', at: Date.now() });
-    save();
-  }
 
-  renderItems();
-})();
+    dashboard.innerHTML = "";
+
+    statusList.forEach(status => {
+        const total = wfas.filter(wfa => wfa.status === status).length;
+
+        dashboard.innerHTML += `
+        <div class="card">
+            <h4>${status}</h4>
+            <p>${total}</p>
+        </div>`;
+    });
+}
+
+atualizarTabela();
+atualizarDashboard();
+
 </script>
+
 </body>
 </html>
